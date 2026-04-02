@@ -10,6 +10,7 @@ Claude Code Custom Skill을 Kiro CLI Power로 마이그레이션한 컬렉션입
 | **aws-diagram** | AWS 아키텍처 다이어그램 (SVG/PPTX, 직교 화살표) | 없음 |
 | **sd35l** | Stable Diffusion 3.5 Large 이미지 생성 (Bedrock) | 없음 |
 | **svg-diagram** | 범용 SVG 다이어그램/배너 (순수 마크업) | 없음 |
+| **youtube-script** | YouTube 영상 자막/스크립트 추출 | youtube-transcript-api |
 
 ## 설정 방법
 
@@ -24,7 +25,8 @@ Claude Code Custom Skill을 Kiro CLI Power로 마이그레이션한 컬렉션입
     "skill:///<POWERS_DIR>/myslide/SKILL.md",
     "skill:///<POWERS_DIR>/aws-diagram/SKILL.md",
     "skill:///<POWERS_DIR>/sd35l/SKILL.md",
-    "skill:///<POWERS_DIR>/svg-diagram/SKILL.md"
+    "skill:///<POWERS_DIR>/svg-diagram/SKILL.md",
+    "skill:///<POWERS_DIR>/youtube-script/SKILL.md"
   ]
 }
 ```
@@ -40,6 +42,7 @@ ln -sf "$POWERS_DIR/aws-diagram" ~/.kiro/skills/aws-diagram
 ln -sf "$POWERS_DIR/sd35l" ~/.kiro/skills/sd35l
 ln -sf "$POWERS_DIR/svg-diagram" ~/.kiro/skills/svg-diagram
 ln -sf "$POWERS_DIR/myslide" ~/.kiro/skills/myslide
+ln -sf "$POWERS_DIR/youtube-script" ~/.kiro/skills/youtube-script
 ```
 
 ## 각 Power 소개
@@ -64,6 +67,11 @@ Amazon Bedrock의 Stability AI SD3.5 Large 모델로 이미지 생성. text-to-i
 
 트리거: `SVG 다이어그램`, `배너 만들어`, `파이프라인 시각화`
 
+### youtube-script
+YouTube 영상에서 자막/캡션을 추출하여 텍스트 파일로 저장. 자동 생성 자막과 수동 자막 모두 지원하며, 한국어/영어/일본어 등 다국어 대응. 타임스탬프 포함 및 JSON 출력 옵션.
+
+트리거: `유튜브 스크립트`, `자막 추출`, `youtube transcript`, `유튜브 자막`
+
 ## 의존성
 
 - Python 3.9+, `Pillow`, `boto3` (이미지 생성 스크립트)
@@ -71,5 +79,6 @@ Amazon Bedrock의 Stability AI SD3.5 Large 모델로 이미지 생성. text-to-i
 - LibreOffice (PPTX→PDF 변환, QA용)
 - `librsvg` (SVG→PNG 변환)
 - AWS credentials (Bedrock 모델 접근, sd35l)
+- `youtube-transcript-api` (YouTube 자막 추출)
 
 각 Power의 상세 설치 가이드는 해당 디렉토리의 README.md를 참고하세요.
