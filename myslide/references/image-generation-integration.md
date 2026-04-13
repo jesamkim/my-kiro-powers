@@ -26,13 +26,20 @@ python3 ~/.kiro/skills/sd35l/scripts/generate_image.py \
 
 ```bash
 python3 ~/.kiro/skills/sd35l/scripts/generate_image.py \
-  --prompt "Futuristic artificial intelligence visualization, interconnected neural network nodes with glowing orange and cyan pathways, deep dark navy background, volumetric lighting, cinematic wide angle composition, professional technology illustration, ultra detailed 3D render" \
-  --negative-prompt "text, watermarks, logos, people, bright white background, cartoon, cluttered, busy" \
-  --aspect-ratio 16:9 --seed 42001 \
+  --prompt "..." \
+  --negative-prompt "..." \
+  --aspect-ratio 16:9 \
+  --seed 42 \
   --output-dir /tmp/myslide-assets/
 ```
 
-**Cloud/Infrastructure Topic:**
+**Supported aspect ratios**: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2:3`, `3:2`, `21:9`, `9:21`
+
+## Slide-Optimized Prompt Recipes
+
+### Title Slide Hero Images (16:9)
+
+**AI/ML Topic:**
 ```bash
 python3 ~/.kiro/skills/sd35l/scripts/generate_image.py \
   --prompt "Abstract cloud computing infrastructure, floating translucent server racks connected by light beams, dark cosmic background with subtle blue nebula, minimal clean composition, professional futuristic visualization, cinematic lighting" \

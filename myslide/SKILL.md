@@ -25,8 +25,9 @@ Every slide should look like it was crafted by the AWS brand team.
 2. Read [references/slide-patterns.md](references/slide-patterns.md) for layout templates
 3. Read [references/pptxgenjs.md](references/pptxgenjs.md) for PptxGenJS creation guide
 4. Read [references/editing.md](references/editing.md) for editing existing PPTX files
-5. Use `scripts/create_aws_slide.py` to generate background/SVG assets
-6. Official AWS service icons are in `icons/` (248 icons extracted from AWS Architecture Icon Deck)
+5. Read [references/animations.md](references/animations.md) for animation primitives
+6. Use `scripts/create_aws_slide.py` to generate background/SVG assets
+7. Official AWS service icons are in `icons/` (248 icons extracted from AWS Architecture Icon Deck)
 
 All references and scripts are self-contained within this skill directory.
 No external skill dependencies required.
@@ -49,7 +50,20 @@ When generating title/thank-you slides, use these defaults unless the user speci
 3. **Generate background images**: Run the gradient background generator script
 4. **Create slides**: Use PptxGenJS (Node.js) with the AWS theme constants
 5. **Add SVG visuals**: Generate SVG diagrams for architecture/flow slides and embed as images
-6. **QA (subagent)**: Always delegate QA to a subagent (Sonnet 4.6+) to protect the main context window from image-heavy inspection. The subagent converts slides to images, visually verifies every slide against the QA Checklist, and returns a text-only report of issues found.
+6. **Apply animations**: Design contextual animations and apply via `apply_animations.py`
+7. **QA (two-phase)**: QA uses two complementary layers — programmatic validation
+   catches what rendered images hide (out-of-bounds shapes, font violations),
+   then visual inspection catches what code cannot judge (aesthetics, readability).
+
+   **Phase 1 — Programmatic QA** (fast, deterministic, run in main agent):
+   ```bash
+   python3 scripts/qa_validate.py output.pptx
+   ```
+   If critical issues are found (exit code 1), fix them before proceeding to Phase 2.
+
+   **Phase 2 — Visual QA** (subagent): Delegates image-heavy inspection to a separate
+   context to protect the main context window. Spawn a subagent (Sonnet 4.6+) for
+   visual inspection.
 
 ```bash
 # Step 1: Generate AWS gradient backgrounds
@@ -58,7 +72,13 @@ python3 scripts/create_aws_slide.py backgrounds --output-dir /tmp/myslide-assets
 # Step 2: Run the PptxGenJS creation script (generated per presentation)
 node create_presentation.js
 
-# Step 3: QA - delegate to subagent (see "QA Subagent" section below)
+# Step 3: Apply animations (design JSON spec per presentation context)
+python3 scripts/apply_animations.py output.pptx animations.json -o animated.pptx
+
+# Step 4: Programmatic QA — catches structural issues renderers hide
+python3 scripts/qa_validate.py output.pptx
+
+# Step 5: Visual QA — delegate to subagent (see below)
 ```
 
 ### B. Editing an Existing Slide
@@ -308,6 +328,23 @@ prompt recipes and advanced techniques.
 
 ## Rounded Rectangle Default
 
+### Thin Accent Lines Under Titles (DO NOT USE)
+
+Do NOT add thin orange/pink accent lines (h: 0.04) under slide titles.
+This creates visual noise and looks repetitive across slides. The title text
+itself is sufficient as the visual anchor. If visual separation is needed
+between title and content, use whitespace (0.3"+ gap) instead of a line.
+
+```javascript
+// ❌ WRONG: Thin accent line under title
+slide.addShape("rect", {
+  x: 0.8, y: 1.05, w: 1.5, h: 0.04, fill: { color: C.orange },
+});
+
+// ✅ CORRECT: Use whitespace gap between title and content
+// Title at y: 0.33, content starts at y: 1.41 (natural 0.3"+ gap)
+```
+
 All card-like shapes (content cards, agenda items, grid cells, tag badges, summary bars)
 MUST use `ROUNDED_RECTANGLE` with `rectRadius` instead of plain `RECTANGLE`.
 This gives a modern, polished look consistent with contemporary UI design.
@@ -363,7 +400,7 @@ of colors feels chaotic.
 | **Primary Text** | White | `FFFFFF` | All headings, body text, bullets |
 | **Emphasis** | Orange | `F66C02` | Key terms, highlights, numbered badges |
 | **Container** | Dark Navy | `161E2D` | Card fills, table cells, box backgrounds |
-| **Secondary** | Slate Gray | `8899AA` | Muted text, separators, captions |
+| **Secondary** | Light Slate | `C8D0D8` | Subtitles, descriptions, captions (readable on projectors) |
 
 ### Allowed Accent (sparingly)
 
@@ -484,7 +521,7 @@ slide.addImage({ data: lightCard, x: 1.0, y: 1.5, w: 5.8, h: 4.5 });
 | Warm accent | `F66C02` | `C91F8A` | `161E2D` | Orange→Magenta on dark card |
 | Cool accent | `5600C2` | `2D7CFB` | `F2F4F4` | Purple→Blue on light card |
 | Brand gradient | `C91F8A` | `5600C2` | `161E2D` | Magenta→Purple on dark card |
-| Subtle | `8899AA` | `161E2D` | `161E2D` | Gray fade, barely visible |
+| Subtle | `C8D0D8` | `161E2D` | `161E2D` | Gray fade, subtle |
 
 See `slide-patterns.md > Gradient Border Cards` for the full multi-card layout pattern.
 
@@ -583,6 +620,59 @@ are documented in `references/pptxgenjs.md`:
   borders because the result is native PowerPoint and remains editable. Use `apply_gradient_border()`
   from the reference.
 
+## Animations (Contextual Design)
+
+Animations are designed **per-presentation** based on content and narrative flow.
+There are no fixed templates — each slide gets animations tailored to its story.
+
+Read [references/animations.md](references/animations.md) for the full primitives reference.
+
+### Workflow
+
+1. **Design animations** contextually after slides are created:
+   - What appears first? (title, framing context)
+   - What's the focal sequence? (data flow, process steps)
+   - What's the conclusion? (output, call-to-action)
+
+2. **Write JSON spec** describing the animation sequence per slide
+
+3. **Apply**:
+   ```bash
+   python3 scripts/apply_animations.py deck.pptx animations.json -o animated.pptx
+   ```
+
+### Key Primitives
+
+| Category | Effects | Use Case |
+|----------|---------|----------|
+| **Entrance** | appear, fade_in, fly_in, wipe, zoom_in | Revealing content step-by-step |
+| **Emphasis** | pulse, spin, grow_shrink, color_pulse | Drawing attention to key element |
+| **Exit** | disappear, fade_out, fly_out, zoom_out | Removing elements |
+| **Motion** | motion_path (SVG path syntax) | Data flow, pipeline visualization |
+| **Property** | property_change (fill_color, visibility) | State transitions |
+
+### Triggers
+
+| Trigger | Behavior |
+|---------|----------|
+| `onClick` | New click point — presenter controls timing |
+| `withPrevious` | Simultaneous with previous animation |
+| `afterPrevious` | Auto-starts after previous completes |
+
+### Shape Naming
+
+PptxGenJS does NOT preserve custom `name` attributes. After generating the PPTX,
+run `--list-shapes` to get actual shape names/IDs, then build the animation JSON spec
+using those names.
+
+### Animation Design Principles
+
+- **Less is more** — animate only what serves the narrative
+- **Consistent timing** — use 500ms for standard, 300ms for fast, 800-1000ms for dramatic
+- **Group related elements** — card + text should animate together (withPrevious)
+- **Build left-to-right** — for pipelines and data flows
+- **Fade for text, Fly for shapes** — general heuristic for visual harmony
+
 ## Conversational Editing
 
 The user may request changes like:
@@ -616,7 +706,7 @@ it enables inter-agent communication, shared task tracking, and phased execution
 | **designer** | Visual Design | sonnet | Generate backgrounds, SVG diagrams, icons |
 | **writer-1** | Content (slides 1-N/2) | sonnet | Write first half slide code |
 | **writer-2** | Content (slides N/2+1-N) | sonnet | Write second half slide code |
-| **qa** | Quality Assurance | sonnet | Render slides to images, check visual quality (image-heavy — needs Sonnet 4.6+) |
+| **qa** | Quality Assurance | sonnet | Run qa_validate.py first, then visual QA via subagent (Sonnet 4.6+) |
 
 **Team Workflow:**
 ```
@@ -625,7 +715,7 @@ it enables inter-agent communication, shared task tracking, and phased execution
    - designer generates all background/SVG assets
    - writers create PptxGenJS code for assigned slides
 3. lead: Combine all parts into single presentation script
-4. qa: Render and inspect every slide, report issues
+4. qa: Run qa_validate.py, fix critical issues, then render and inspect visually
 5. lead: Apply fixes, finalize
 ```
 
@@ -655,12 +745,28 @@ All scripts are self-contained within `scripts/`:
 | `scripts/thumbnail.py` | Generate thumbnail grid for visual overview |
 | `scripts/clean.py` | Clean PPTX XML (remove unused elements) |
 | `scripts/add_slide.py` | Add slides to existing PPTX |
+| `scripts/apply_animations.py` | Inject OOXML animations from JSON spec into PPTX |
+| `scripts/qa_validate.py` | Programmatic QA — bounds, connectors, font sizes, zero-size shapes |
 | `references/image-generation-integration.md` | sd35l image generation guide for slides |
 
-**QA Subagent (ALWAYS use — protects main context from image token cost):**
+**Two-Phase QA (ALWAYS run both phases):**
 
-QA is image-heavy and consumes significant context window tokens. Always spawn a
-dedicated subagent (via `use_subagent` or `delegate` tool) for visual inspection. The subagent runs
+**Phase 1 — Programmatic QA** (run in main agent, fast):
+```bash
+python3 scripts/qa_validate.py {pptx_path}
+# Exit code 0 = pass, 1 = critical issues, 2 = error
+# Add --json for machine-readable output
+# Add --strict to include INFO-level findings
+```
+This catches what rendered images HIDE — shapes extending beyond slide boundaries,
+connector endpoints outside the slide, text below 15pt, zero-size shapes. These
+issues are invisible in rendered images because renderers clip at the slide edge.
+Fix all critical issues before proceeding to Phase 2.
+
+**Phase 2 — Visual QA** (subagent, image-heavy):
+
+Visual QA consumes significant context window tokens. Always spawn a dedicated
+subagent (via `use_subagent` or `delegate` tool) for visual inspection. The subagent runs
 the conversion commands, reads the rendered slide images, checks every item in the
 QA Checklist, and returns a **text-only** summary of pass/fail results and specific
 issues found. The main agent never reads the slide images directly.
@@ -693,6 +799,19 @@ python3 scripts/office/pack.py unpacked/ output.pptx
 
 ## QA Checklist
 
+### Phase 1 — Programmatic (`qa_validate.py`, run automatically)
+
+These are checked by the script — no manual inspection needed:
+- [ ] All shapes within slide boundaries (no out-of-bounds objects)
+- [ ] All connector/arrow endpoints within slide boundaries
+- [ ] No zero-length connectors (invisible arrows)
+- [ ] No zero-size shapes (invisible objects)
+- [ ] Body text fontSize >= 15pt (NEVER 12-14pt) — includes table cells, process flow cards, column text
+- [ ] No text below 8pt (absolute minimum for captions/footers)
+
+### Phase 2 — Visual (subagent inspection)
+
+These require human/AI visual judgment on rendered images:
 After generating any presentation:
 - [ ] Every slide has a visual element (no text-only slides)
 - [ ] Color contrast is sufficient (white text on dark backgrounds)
@@ -707,9 +826,8 @@ After generating any presentation:
 - [ ] Arrow markers use Open Arrow style (stroke, not filled polygon)
 - [ ] All card/container shapes use ROUNDED_RECTANGLE (not plain RECTANGLE)
 - [ ] Accent colors use line border, not overlay bars
-- [ ] Max 5 colors per slide (bgBase, white, orange, darkNavy, slateGray `8899AA` + magenta border)
+- [ ] Max 5 colors per slide (bgBase, white, orange, darkNavy, lightSlate `C8D0D8` + magenta border)
 - [ ] No unnecessary colors (lavender, salmon, teal, green reserved for special cases only)
-- [ ] Body text fontSize >= 15pt (NEVER 12-14pt) — includes table cells, process flow cards, column text
 - [ ] Card whitespace ratio: text fills >= 60% of card height (no excessive bottom gaps)
 - [ ] Grid/multi-card slides use 15pt+ body text (not smaller to "fit")
 - [ ] Thank You slide: English/Korean text must not overlap (separate lines with sufficient spacing)
