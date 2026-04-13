@@ -225,108 +225,7 @@ For High-Level diagrams in aws-diagram JSON, use `"type": "generic"` containers:
 **SVG layer order rule** (applies to all SVG diagram generation):
 Icons must render ABOVE arrows. Render order: background > containers > arrows > callouts > icons.
 
-## Image Generation (Optional)
-
-When a slide needs a **conceptual illustration, hero image, or visual metaphor** that cannot
-be expressed with SVG diagrams or AWS icons, use the `sd35l` skill (GA) to generate images
-via Amazon Bedrock.
-
-**Requires**: The `sd35l` skill (Power) must be installed at `~/.kiro/skills/sd35l/`.
-
-### When to Use Image Generation vs SVG Diagrams
-
-| Content Type | Use SVG/Icons | Use sd35l |
-|---|---|---|
-| AWS architecture diagrams | Yes | No |
-| Process flows, step diagrams | Yes | No |
-| Conceptual hero images (AI brain, cloud, etc.) | No | Yes |
-| Abstract background visuals | No | Yes |
-| Product/scenario illustrations | No | Yes |
-| Screenshot placeholders | No | Yes |
-| Data flow with service icons | Yes | No |
-
-### Slide-Optimized Aspect Ratios
-
-| Use Case | Aspect Ratio | Slide Coverage |
-|---|---|---|
-| Full-slide background | `16:9` | Entire slide behind text |
-| Hero image (title slide) | `16:9` | Right 60-70% of slide |
-| Half-slide illustration | `2:3` or `3:4` | Left/right half |
-| Card illustration | `1:1` | Inside a content card |
-| Banner (wide strip) | `21:9` | Top or bottom strip |
-
-### Integration Workflow
-
-```bash
-# 1. Generate image with sd35l
-python3 ~/.kiro/skills/sd35l/scripts/generate_image.py \
-  --prompt "Abstract dark gradient with glowing neural network connections, deep navy and purple tones, futuristic technology atmosphere, minimal clean composition" \
-  --negative-prompt "text, watermarks, logos, people, bright colors, white background" \
-  --aspect-ratio 16:9 \
-  --seed 42 \
-  --output-dir /tmp/myslide-assets/
-
-# 2. Result JSON: {"model": "...", "seed": 42, "images": ["/tmp/myslide-assets/sd35l_1.png"]}
-
-# 3. Embed in PptxGenJS using base64
-```
-
-### Prompt Guidelines for Presentation Images
-
-**Style keywords to include:**
-- "dark background", "deep navy", "dark gradient" (matches AWS theme)
-- "minimal", "clean composition" (professional look)
-- "glowing", "luminous accents" (matches orange/magenta highlights)
-- "futuristic", "technology", "digital" (AWS tech context)
-
-**Standard negative prompt for all slide images:**
-```
-"text, watermarks, logos, bright white background, oversaturated, cartoon, cluttered, busy composition, blurry"
-```
-
-**Prompt templates by slide type:**
-
-| Slide Type | Prompt Pattern |
-|---|---|
-| Title hero | "[Topic concept] visualization, dark futuristic background, glowing [accent color] accents, cinematic wide shot, professional technology illustration" |
-| Content illustration | "[Concept] depicted as [visual metaphor], dark navy background, clean minimal style, soft ambient lighting, 3D render" |
-| Background overlay | "Abstract [theme] pattern, dark gradient from deep navy to black, subtle glowing particles, seamless texture, minimal" |
-| Card thumbnail | "[Subject icon/symbol], centered on dark background, simple flat design with glow effect, single color accent, square composition" |
-
-### Embedding Generated Images in PptxGenJS
-
-```javascript
-const fs = require('fs');
-
-const heroImage = fs.readFileSync('/tmp/myslide-assets/sd35l_1.png');
-const heroBase64 = 'image/png;base64,' + heroImage.toString('base64');
-
-// Full-slide background image
-slide.background = { data: heroBase64 };
-
-// Or position as a visual element
-slide.addImage({
-  data: heroBase64,
-  x: 5.5, y: 0, w: 7.83, h: 7.5,  // Right 60% of slide
-});
-
-// Semi-transparent overlay on top of image (for text readability)
-slide.addShape(pres.shapes.RECTANGLE, {
-  x: 0, y: 0, w: 13.33, h: 7.5,
-  fill: { color: "000000", transparency: 50 }
-});
-```
-
-### Cost Awareness
-
-- SD3.5 Large: ~$0.04/image regardless of aspect ratio
-- A typical 10-slide deck with 3-4 generated images: ~$0.16
-- Use `--seed` to reproduce exact images when iterating
-
-See [references/image-generation-integration.md](references/image-generation-integration.md) for detailed
-prompt recipes and advanced techniques.
-
-## Rounded Rectangle Default
+### aws-diagram Skill Integration
 
 ### Thin Accent Lines Under Titles (DO NOT USE)
 
@@ -747,7 +646,6 @@ All scripts are self-contained within `scripts/`:
 | `scripts/add_slide.py` | Add slides to existing PPTX |
 | `scripts/apply_animations.py` | Inject OOXML animations from JSON spec into PPTX |
 | `scripts/qa_validate.py` | Programmatic QA — bounds, connectors, font sizes, zero-size shapes |
-| `references/image-generation-integration.md` | sd35l image generation guide for slides |
 
 **Two-Phase QA (ALWAYS run both phases):**
 
@@ -833,6 +731,3 @@ After generating any presentation:
 - [ ] Thank You slide: English/Korean text must not overlap (separate lines with sufficient spacing)
 - [ ] Architecture diagram: every service box must include an AWS service icon (no empty boxes)
 - [ ] Footer with AWS logo placement is consistent
-- [ ] Nova Canvas images match AWS dark theme (predominantly dark with accent glows)
-- [ ] Text overlay on generated images has sufficient contrast (dark overlay applied)
-- [ ] Generated image dimensions match target slide area (no stretching/distortion)

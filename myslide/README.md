@@ -37,7 +37,6 @@ brew install --cask libreoffice  # PPTX→PDF 변환 (QA용)
 
 myslide는 다음 Power를 참조합니다. `~/.kiro/skills/`에 심볼릭 링크가 필요합니다:
 
-- `sd35l` — 히어로 이미지/일러스트 생성
 - `aws-diagram` — 복잡한 AWS 아키텍처 다이어그램
 
 ## 구성
@@ -58,5 +57,5 @@ myslide/
     ├── slide-patterns.md       # 20가지 레이아웃 템플릿
     ├── pptxgenjs.md            # PptxGenJS 사용 가이드
     ├── editing.md              # 기존 PPTX 편집 가이드
-    └── image-generation-integration.md  # sd35l 이미지 생성 연동
+    └── animations.md           # 애니메이션 프리미티브 레퍼런스
 ```

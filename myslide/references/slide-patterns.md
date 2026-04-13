@@ -1296,27 +1296,17 @@ addAwsFooter(slide);
 
 ---
 
-## Image Hero (sd35l)
+## Image Hero
 
 Full-width generated image on the right with text content on the left.
-Uses sd35l skill to generate a conceptual hero image matching the topic.
 Best for title slides, topic introductions, and visually impactful openers.
-
-**Image generation:**
-```bash
-# Generate hero image (16:9)
-python3 ~/.kiro/skills/sd35l/scripts/generate_image.py \
-  --prompt "Futuristic AI neural network visualization, interconnected glowing nodes and pathways, deep navy and purple gradient background, luminous orange and magenta accents, cinematic wide angle, professional technology illustration, ultra detailed" \
-  --negative-prompt "text, watermarks, logos, people, bright white background, cartoon, cluttered" \
-  --aspect-ratio 16:9 --seed 42001 \
-  --output-dir /tmp/myslide-assets/
-```
+Provide your own hero image or generate one externally.
 
 ```javascript
 let slide = pres.addSlide();
 
-// Read generated image
-const heroImg = fs.readFileSync('/tmp/myslide-assets/sd35l_1.png');
+// Read hero image (user-provided or externally generated)
+const heroImg = fs.readFileSync('/tmp/myslide-assets/hero.png');
 const heroBase64 = 'image/png;base64,' + heroImg.toString('base64');
 
 // Full slide background (dark gradient as base)
@@ -1379,21 +1369,11 @@ addAwsFooter(slide);
 
 ---
 
-## Image + Text Split (sd35l)
+## Image + Text Split
 
-Half-and-half layout: generated image on one side, structured text content on the other.
-Uses sd35l to create a portrait illustration that fills one column.
+Half-and-half layout: image on one side, structured text content on the other.
 Best for concept explanations, feature highlights, and storytelling slides.
-
-**Image generation:**
-```bash
-# Generate half-slide image (2:3 portrait)
-python3 ~/.kiro/skills/sd35l/scripts/generate_image.py \
-  --prompt "Cloud computing security shield concept, translucent blue protective barrier around data center, dark environment, glowing edges, professional 3D render, centered composition" \
-  --negative-prompt "text, watermarks, people, cartoon, bright background" \
-  --aspect-ratio 2:3 --seed 42002 \
-  --output-dir /tmp/myslide-assets/
-```
+Provide your own image or generate one externally.
 
 ```javascript
 let slide = pres.addSlide();
@@ -1406,8 +1386,8 @@ slide.addText("Enterprise-Grade Security", {
   color: AWS_THEME.colors.white, bold: true
 });
 
-// Generated image (left side)
-const conceptImg = fs.readFileSync('/tmp/myslide-assets/sd35l_1.png');
+// Image (left side)
+const conceptImg = fs.readFileSync('/tmp/myslide-assets/concept.png');
 const conceptBase64 = 'image/png;base64,' + conceptImg.toString('base64');
 
 slide.addImage({
@@ -1455,27 +1435,17 @@ addAwsFooter(slide);
 
 ---
 
-## Full Image Background (sd35l)
+## Full Image Background
 
-Generated image as the entire slide background with a dark overlay for text readability.
-Uses sd35l to create an atmospheric, abstract background.
+Image as the entire slide background with a dark overlay for text readability.
 Best for impactful quote slides, key message slides, and section transitions.
-
-**Image generation:**
-```bash
-# Generate full background (16:9)
-python3 ~/.kiro/skills/sd35l/scripts/generate_image.py \
-  --prompt "Abstract dark cosmic nebula, deep space with subtle blue and purple gas clouds, scattered tiny stars, very dark overall tone, cinematic atmosphere, minimal clean composition, suitable as presentation background" \
-  --negative-prompt "text, watermarks, bright colors, people, objects, busy details, white, light background" \
-  --aspect-ratio 16:9 --seed 60001 \
-  --output-dir /tmp/myslide-assets/
-```
+Provide your own atmospheric image or generate one externally.
 
 ```javascript
 let slide = pres.addSlide();
 
-// Generated image as full background
-const bgImg = fs.readFileSync('/tmp/myslide-assets/sd35l_1.png');
+// Image as full background
+const bgImg = fs.readFileSync('/tmp/myslide-assets/bg.png');
 const bgBase64 = 'image/png;base64,' + bgImg.toString('base64');
 slide.background = { data: bgBase64 };
 
