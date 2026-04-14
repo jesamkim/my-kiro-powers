@@ -1,6 +1,7 @@
 <div align="center">
-  <h1>🔌 my-kiro-powers</h1>
-  <p><strong>Kiro CLI용 커스텀 Power 컬렉션 — SA 업무 자동화 도구 모음</strong></p>
+  <img src="assets/kiro-mascot.png" alt="Kiro" width="80"/>
+  <h1>my-kiro-powers</h1>
+  <p><strong>Kiro CLI용 커스텀 Power 컬렉션 — 업무 자동화 도구 모음</strong></p>
   <p>
     <img src="https://img.shields.io/badge/platform-Kiro_CLI-232F3E?style=flat-square&logo=amazon-aws" alt="Kiro CLI"/>
     <img src="https://img.shields.io/badge/powers-5-F66C02?style=flat-square" alt="5 Powers"/>
@@ -11,7 +12,7 @@
 ---
 
 Claude Code Custom Skill을 Kiro CLI Power로 마이그레이션한 컬렉션입니다.
-프레젠테이션 생성, 아키텍처 다이어그램, YouTube 자막 추출 등 SA 업무에 필요한 도구를 Kiro CLI에서 바로 사용할 수 있습니다.
+프레젠테이션 생성, 아키텍처 다이어그램, YouTube 자막 추출 등 업무에 필요한 도구를 Kiro CLI에서 바로 사용할 수 있습니다.
 
 ## 📦 Powers
 
