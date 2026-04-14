@@ -28,6 +28,13 @@ Claude Code Custom Skill을 Kiro CLI Power로 마이그레이션한 컬렉션입
 
 > macOS 또는 Linux 환경을 기준으로 합니다.
 
+### 0. 클론
+
+```bash
+git clone https://github.com/jesamkim/my-kiro-powers.git
+cd my-kiro-powers
+```
+
 ### 1. 사전 설치
 
 <details>
