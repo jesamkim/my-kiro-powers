@@ -26,10 +26,12 @@ Claude Code Custom Skill을 Kiro CLI Power로 마이그레이션한 컬렉션입
 
 ## ⚡ Quick Start
 
+> macOS 또는 Linux 환경을 기준으로 합니다.
+
 ### 1. 사전 설치
 
 <details>
-<summary><strong>Homebrew (시스템 도구)</strong></summary>
+<summary><strong>Homebrew (macOS)</strong></summary>
 
 ```bash
 brew install node           # Node.js 18+ (myslide)
