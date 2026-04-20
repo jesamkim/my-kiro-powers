@@ -36,8 +36,8 @@
 | `FF9EA2` | Salmon Pink | Private subnet containers |
 | `00A0C8` | Teal/Cyan | Icon accents, secondary highlight |
 | `69AE35` | AWS Green | Success/positive indicators |
-| `8899AA` | Slate Gray | Footer copyright only (intentionally subtle) |
 | `C8D0D8` | Light Slate | Subtitles, descriptions, secondary text (projector-readable) |
+| `8899AA` | Slate Gray | Footer copyright only (intentionally subtle) |
 
 ### Gradient Definitions
 
@@ -195,8 +195,8 @@ const AWS_THEME = {
     salmonPink: "FF9EA2",
     teal: "00A0C8",
     green: "69AE35",
-    slateGray: "8899AA",  // footer copyright only
     lightSlate: "C8D0D8",
+    slateGray: "8899AA",  // footer copyright only
     lightGray: "F2F4F4",
   },
 

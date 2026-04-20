@@ -1,61 +1,143 @@
-# myslide
+# MySlide - AWS-Themed Presentation Generator
 
-AWS reInvent 2023 디자인 시스템 기반 프레젠테이션 생성기.
+Create professional PowerPoint presentations with two AWS design themes:
+**Dark** (reInvent 2023/2025) and **Light** (L100/field enablement).
+SVG architecture diagrams, cross-skill integration, and conversational slide editing.
 
-PptxGenJS(Node.js)로 슬라이드를 생성하고, Python 스크립트로 그라디언트 배경과 SVG 아키텍처 다이어그램을 만듭니다. 20가지 슬라이드 레이아웃, 248개 AWS 서비스 아이콘 내장.
+## Features
 
-## 트리거
+- **Dual Theme Support**: Dark (reInvent gradient) and Light (white + gradient blobs)
+- **25+ Slide Layouts**: Title, Agenda, Section Header, Content Card, Two/Three Column,
+  Key Points Grid, Do's vs Don'ts, CTA, Customer Case Study, Process Flow, Architecture,
+  Comparison Table, Screenshot+Text, Summary Grid, Multi-Card Grid, Thank You, and more
+- **SVG Diagrams**: Auto-generate architecture and flow diagrams with 248 AWS service icons
+- **Cross-Skill Integration**: `svg-diagram` for diagrams
+- **Animations**: OOXML-based animation system with JSON spec and Python post-processor
+- **Conversational Editing**: Modify specific slides by number via natural language
+- **Parallel Generation**: Sub-agent strategy (8+ slides) and team-up strategy (15+ slides)
+- **Two-Phase QA**: Programmatic validation + visual inspection (kiro or subagent)
 
-`myslide`, `AWS 프레젠테이션`, `슬라이드 만들어`, `발표자료`, `make slides`, `AWS slides`
-
-## 사전 설치 (필수)
-
-### Node.js 패키지
-
-```bash
-npm install -g pptxgenjs
-npm install -g sharp
-```
-
-### Python 패키지
-
-```bash
-pip install Pillow
-pip install cairosvg   # SVG→PNG 변환 (선택, 없으면 rsvg-convert 사용)
-```
-
-### 시스템 도구
+## Quick Start
 
 ```bash
-# macOS
-brew install librsvg    # rsvg-convert (SVG→PNG 변환)
-brew install poppler    # pdftoppm (PPTX→이미지 변환, QA용)
-brew install --cask libreoffice  # PPTX→PDF 변환 (QA용)
+# Trigger with:
+/myslide
+# or natural language: "AWS 프레젠테이션 만들어줘", "create AWS slides"
+# Light theme: "L100 교육 자료 만들어줘", "training deck", "light theme"
 ```
 
-### 연관 Power (필수)
+## Theme Selection
 
-myslide는 다음 Power를 참조합니다. `~/.kiro/skills/`에 심볼릭 링크가 필요합니다:
+| Context | Theme | Trigger |
+|---------|-------|---------|
+| reInvent, Summit keynotes | **Dark** | Default |
+| L100/L200 field enablement | **Light** | "L100", "training deck", "밝은 테마" |
+| Customer-facing training | **Light** | "customer-facing", "교육 자료" |
+| Internal workshops | **Light** | "workshop", "white background" |
+| Technical deep-dives | Either | User preference |
 
-- `aws-diagram` — 복잡한 AWS 아키텍처 다이어그램
+## Default Presenter
 
-## 구성
+| Field | Value |
+|-------|-------|
+| Korean Name | 김제삼 |
+| English Name | Jesam Kim |
+| Title | Solutions Architect |
+| Company | Amazon Web Services |
+| Email | jesamkim@amazon.com |
+
+## Theme Colors
+
+### Dark Theme (reInvent 2023)
+
+| Role | Hex | Usage |
+|------|-----|-------|
+| Background | `#09051B` | Deep purple-black base |
+| Orange | `#F66C02` | Primary emphasis, key terms |
+| Magenta | `#C91F8A` | Secondary emphasis, borders |
+| Purple | `#5600C2` | Gradient accents |
+| Dark Navy | `#161E2D` | Card/container backgrounds |
+| White | `#FFFFFF` | Body text, headings |
+
+### Light Theme (L100/Field Enablement)
+
+| Role | Hex | Usage |
+|------|-----|-------|
+| Background | `#FFFFFF` | White base |
+| Sky Blue | `#4FC3F7` | Table headers, bullets, links |
+| Purple | `#6B46C1` | Architecture labels, step badges |
+| Coral | `#C96842` | Key stat emphasis, CTA highlights |
+| AWS Orange | `#FF9900` | Internal badge, numbered badges |
+| Card Fill | `#F5F0EB` | Cream/beige card backgrounds |
+
+## Directory Structure
 
 ```
 myslide/
-├── SKILL.md                    # Power 정의 (디자인 시스템, 워크플로우, QA 체크리스트)
-├── LICENSE.txt
-├── icons/                      # AWS 서비스 아이콘 248개 (SVG)
-├── scripts/
-│   ├── create_aws_slide.py     # 배경 이미지, SVG 다이어그램, AWS 로고 생성
-│   ├── add_slide.py            # 기존 PPTX에 슬라이드 추가
-│   ├── thumbnail.py            # 슬라이드 썸네일 그리드 생성
-│   ├── clean.py                # PPTX XML 정리
-│   └── office/                 # LibreOffice 연동 (PDF 변환, unpack/pack)
-└── references/
-    ├── aws-theme.md            # 색상, 폰트, 간격 규칙
-    ├── slide-patterns.md       # 20가지 레이아웃 템플릿
-    ├── pptxgenjs.md            # PptxGenJS 사용 가이드
-    ├── editing.md              # 기존 PPTX 편집 가이드
-    └── animations.md           # 애니메이션 프리미티브 레퍼런스
+├── SKILL.md                          # Main skill instructions (dual theme)
+├── README.md                         # This file
+├── icons/                            # 248 official AWS service icons (SVG)
+├── references/
+│   ├── aws-theme.md                  # Dark theme: colors, fonts, JS constants
+│   ├── light-theme.md                # Light theme: colors, patterns, JS constants
+│   ├── slide-patterns.md             # 19+ layout patterns with PptxGenJS code
+│   ├── pptxgenjs.md                  # PptxGenJS creation guide
+│   ├── editing.md                    # Existing PPTX editing workflow
+│   └── animations.md                 # OOXML animation primitives
+└── scripts/
+    ├── create_aws_slide.py           # Background/SVG/logo asset generator
+    ├── apply_animations.py           # Inject OOXML animations from JSON
+    ├── qa_validate.py                # Programmatic QA (bounds, fonts, shapes)
+    ├── thumbnail.py                  # Thumbnail grid for visual overview
+    ├── clean.py                      # Clean PPTX XML
+    ├── add_slide.py                  # Add slides to existing PPTX
+    └── office/
+        ├── soffice.py                # PPTX -> PDF conversion (LibreOffice)
+        ├── unpack.py                 # Unpack PPTX to XML
+        ├── pack.py                   # Repack XML to PPTX
+        ├── helpers/                  # merge_runs, simplify_redlines
+        ├── validators/               # PPTX/DOCX schema validators
+        └── schemas/                  # ISO/IEC 29500 XSD schemas
 ```
+
+## Dependencies
+
+| Package | Type | Purpose |
+|---------|------|---------|
+| `pptxgenjs` | npm | PPTX creation from scratch |
+| `sharp` | npm | SVG to PNG conversion (gradient cards, blobs) |
+| `Pillow` | pip | Background gradient image generation |
+| `python-pptx` | pip | PPTX reading, editing, and animation injection |
+| `cairosvg` | pip | SVG to PNG conversion |
+| `markitdown[pptx]` | pip | Text extraction from PPTX |
+| `pdftoppm` (poppler) | system | PDF to slide images (QA) |
+| `soffice` (LibreOffice) | system | PPTX to PDF conversion |
+
+## Asset Generation
+
+```bash
+# Generate all assets at once
+python3 scripts/create_aws_slide.py full-setup --output-dir /tmp/myslide-assets/
+
+# Individual commands
+python3 scripts/create_aws_slide.py backgrounds --output-dir /tmp/myslide-assets/
+python3 scripts/create_aws_slide.py svg-diagram --elements "VPC,Lambda,S3,Bedrock" --output /tmp/arch.png
+python3 scripts/create_aws_slide.py aws-logo --output /tmp/aws-logo.png
+```
+
+## QA Workflow
+
+```bash
+# Phase 1: Programmatic (fast, catches hidden issues)
+python3 scripts/qa_validate.py output.pptx
+
+# Phase 2: Visual (delegate to kiro or subagent)
+# Convert to images, then inspect alignment, colors, readability
+```
+
+## Version
+
+- **v1.1.0** - Add Light theme (L100/field enablement), cross-skill integration, animations
+- **v1.0.0** - Initial release with AWS reInvent 2023 dark design system
+- Author: Jesam Kim
+- License: MIT
