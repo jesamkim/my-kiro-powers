@@ -11,7 +11,7 @@ SVG architecture diagrams, cross-skill integration, and conversational slide edi
   Key Points Grid, Do's vs Don'ts, CTA, Customer Case Study, Process Flow, Architecture,
   Comparison Table, Screenshot+Text, Summary Grid, Multi-Card Grid, Thank You, and more
 - **SVG Diagrams**: Auto-generate architecture and flow diagrams with 248 AWS service icons
-- **Cross-Skill Integration**: `svg-diagram` for diagrams
+- **Cross-Skill Integration**: `svg-diagram` for pixel-perfect diagram generation
 - **Animations**: OOXML-based animation system with JSON spec and Python post-processor
 - **Conversational Editing**: Modify specific slides by number via natural language
 - **Parallel Generation**: Sub-agent strategy (8+ slides) and team-up strategy (15+ slides)
@@ -38,13 +38,15 @@ SVG architecture diagrams, cross-skill integration, and conversational slide edi
 
 ## Default Presenter
 
-| Field | Value |
-|-------|-------|
-| Korean Name | 김제삼 |
-| English Name | Jesam Kim |
+| Field | Example |
+|-------|---------|
+| Korean Name | 홍길동 |
+| English Name | Gildong Hong |
 | Title | Solutions Architect |
-| Company | Amazon Web Services |
-| Email | jesamkim@amazon.com |
+| Company | Your Company |
+| Email | you@example.com |
+
+> Update these defaults in your own fork, or provide them when invoking the skill.
 
 ## Theme Colors
 

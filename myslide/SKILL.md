@@ -15,7 +15,6 @@ license: MIT License
 metadata:
   skill-author: Jesam Kim
   version: 1.0.0
-allowed-tools: [Read, Write, Edit, Bash, Grep, Glob, Agent, AskUserQuestion]
 ---
 
 # MySlide - AWS-Themed Presentation Generator
@@ -56,12 +55,7 @@ For richer visual output, leverage these companion skills when available:
 
 ## Default Presenter
 
-When generating title/thank-you slides, use these defaults unless the user specifies otherwise:
-- Korean: **김제삼**
-- English: **Jesam Kim**
-- Title: Solutions Architect
-- Company: Amazon Web Services
-- Email: jesamkim@amazon.com
+When generating title/thank-you slides, ask the user for their presenter info (name, title, company, contact) or use sensible placeholders. Do not hardcode personal details.
 
 ## Workflow
 
@@ -111,6 +105,28 @@ When the user says "change slide 3" or "update the title slide":
 2. Read the current slide content (markitdown + image inspection)
 3. Apply targeted changes (text, colors, layout, or visual elements)
 4. Re-render and verify only the affected slides
+
+#### B.1 Overlay on a File You Didn't Generate
+
+If the customer (or a teammate) has drawn a slide in PowerPoint and you need
+to ADD a few elements to it without redrawing everything, use python-pptx
+overlay rather than regenerating from scratch. See
+[references/pptx-overlay.md](references/pptx-overlay.md) for the full workflow,
+including the `add_connector` endpoint-vs-width trap that is the most common
+cause of diagonal arrows piercing the slide title. That reference also has
+ready-to-copy helper functions for dashed lines, arrowheads, transparent
+container boxes, and zero-margin text labels.
+
+Typical overlay use cases:
+- Adding a new external system group (e.g., MCP bridge to on-premises systems)
+  to an existing architecture slide
+- Inserting a callout or annotation on a partner-provided deck
+- Fixing one mispositioned label without touching anything else
+
+For the MCP-specific styling (color, dash pattern, label convention), also
+read `references/mcp-external-integration.md` in the `aws-diagram` skill.
+Even when overlaying on an existing file, the visual conventions should match
+the from-scratch aws-diagram output so diagrams across the deck look consistent.
 
 ### C. Sub-Agent Strategy for Large Decks (8+ slides)
 
@@ -272,7 +288,7 @@ Then fine-tune: add 0.1~0.2" margin away from icon edges.
 ### QA Delegation Rules
 
 **Always delegate QA to subagents or kiro** to protect the main context window:
-- Visual QA (image-heavy) → `subagent` tool (Kiro CLI) or kiro skill
+- Visual QA (image-heavy) → `run_in_background: true` subagent or kiro skill
 - Content fact-checking → dedicated subagent with reference MD files
 - Alignment QA for hybrid slides → subagent with specific coordinate check instructions
 - **Never** read slide images directly in the main agent context
@@ -351,9 +367,6 @@ Each presentation should use a MIX of these layouts. Never repeat the same layou
 | **Evolution/Progression** | Maturity stages, AI evolution | slide-patterns.md > Evolution |
 | **Multi-Card Grid** | 2x2 or 3x2 feature cards | slide-patterns.md > Multi-Card Grid |
 | **Gradient Border Cards** | Light cards with colored borders on dark bg | slide-patterns.md > Gradient Border Cards |
-| **Image Hero** | Topic intro with generated visual | slide-patterns.md > Image Hero |
-| **Image + Text Split** | Concept with illustration | slide-patterns.md > Image + Text Split |
-| **Full Image Background** | Impactful quotes, key messages | slide-patterns.md > Full Image Background |
 | **Thank You** | Last slide | slide-patterns.md > Thank You |
 
 ### Light Theme Additional Patterns

@@ -1295,7 +1295,6 @@ addAwsFooter(slide);
 ```
 
 ---
-
 ## Helper: Bottom Summary Bar
 
 Reusable bottom bar for key takeaways, recommendations, or security badges.
